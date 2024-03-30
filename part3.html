@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Game</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    
+    <canvas id="gameCanvas" width="480" height="320"></canvas>
+    <p id="scoreDisplay">Score: 0</p>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let x = canvas.width / 2;
+        let y = canvas.height - 30;
+        let dx = 2;
+        let dy = -2;
+        const ballRadius = 10;
+
+        let paddleHeight = 10;
+        let paddleWidth = 75;
+        let paddleX = (canvas.width - paddleWidth) / 2;
+
+        let rightPressed = false;
+        let leftPressed = false;
+
+        let score = 0;
+
+        document.addEventListener('keydown', keyDownHandler);
+        document.addEventListener('keyup', keyUpHandler);
+
+        function keyDownHandler(e) {
+            if (e.key === 'Right' || e.key === 'ArrowRight') {
+                rightPressed = true;
+            } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
+                leftPressed = true;
+            }
+        }
+
+        function keyUpHandler(e) {
+            if (e.key === 'Right' || e.key === 'ArrowRight') {
+                rightPressed = false;
+            } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
+                leftPressed = false;
+            }
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+            ctx.fillStyle = '#0095DD';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawPaddle() {
+            ctx.beginPath();
+            ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+            ctx.fillStyle = '#0095DD';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBall();
+            drawPaddle();
+
+            if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+                dx = -dx;
+            }
+            if (y + dy < ballRadius) {
+                dy = -dy;
+            } else if (y + dy > canvas.height - ballRadius) {
+                if (x > paddleX && x < paddleX + paddleWidth) {
+                    dy = -dy;
+                    score++;
+                } else {
+                    document.location.reload();
+                    alert('Game Over');
+                }
+            }
+
+            if (rightPressed && paddleX < canvas.width - paddleWidth) {
+                paddleX += 7;
+            } else if (leftPressed && paddleX > 0) {
+                paddleX -= 7;
+            }
+
+            x += dx;
+            y += dy;
+
+            document.getElementById('scoreDisplay').textContent = `Score: ${score}`;
+
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+
+        // Функція для отримання збережених результатів гри з localStorage
+        function getStoredScores() {
+            return JSON.parse(localStorage.getItem('gameScores')) || [];
+        }
+
+        // Функція для збереження результатів гри у localStorage
+        function saveScore(score) {
+            const scores = getStoredScores();
+            scores.push(score);
+            localStorage.setItem('gameScores', JSON.stringify(scores));
+        }
+
+        // Функція для виведення найкращих та найгірших результатів гри
+        function displayScores() {
+            const scores = getStoredScores();
+            const sortedScores = scores.sort((a, b) => b - a);
+            const topThree = sortedScores.slice(0, 3);
+            const bottomThree = sortedScores.slice(-3).reverse();
+
+            console.log('Top Three Scores:', topThree);
+            console.log('Bottom Three Scores:', bottomThree);
+        }
+
+        // Зберегти останній результат гри
+        saveScore(score);
+
+        // Вивести найкращі та найгірших результати гри
+        displayScores();
+    </script>
+</body>
+</html>

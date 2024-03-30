@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тестування</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #testContainer {
+            margin-bottom: 20px;
+        }
+
+        .question {
+            margin-bottom: 10px;
+        }
+
+        .answer {
+            margin-left: 20px;
+        }
+
+        #submitBtn {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #submitBtn:hover {
+            background-color: #45a049;
+        }
+
+        #resultContainer {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="testContainer"></div>
+    <button id="submitBtn">Завершити тест</button>
+    <div id="resultContainer"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+           
+            const testContainer = document.getElementById('testContainer');
+
+         
+            const resultContainer = document.getElementById('resultContainer');
+
+            const submitBtn = document.getElementById('submitBtn');
+
+        
+            const testData = {
+    "testName": "Тест по WEB дизайну",
+    "questions": [
+        {
+            "question": "Вкажіть тег для блоку?",
+            "answers": [
+                {"answer": "a", "isCorrect": false},
+                {"answer": "div", "isCorrect": true},
+                {"answer": "img", "isCorrect": false},
+                {"answer": "p", "isCorrect": false}
+            ]
+        },
+        {
+            "question": "Вкажіть тег для гіперпосилання?",
+            "answers": [
+                {"answer": "a", "isCorrect": true},
+                {"answer": "div", "isCorrect": false},
+                {"answer": "span", "isCorrect": false},
+                {"answer": "p", "isCorrect": false}
+            ]
+        },
+        {
+            "question": "Як вибрати всі елементи з певним класом за допомогою CSS?",
+            "answers": [
+                {"answer": ".class", "isCorrect": true},
+                {"answer": "#class", "isCorrect": false},
+                {"answer": "*class", "isCorrect": false},
+                {"answer": "class", "isCorrect": false}
+            ]
+        },
+        {
+            "question": "Що таке CSS?",
+            "answers": [
+                {"answer": "Cascading Style Sheets", "isCorrect": true},
+                {"answer": "Central Style System", "isCorrect": false},
+                {"answer": "Computer Style Sheets", "isCorrect": false},
+                {"answer": "Coded Style Sheets", "isCorrect": false}
+            ]
+        },
+        {
+            "question": "Як встановити колір фону елемента за допомогою CSS?",
+            "answers": [
+                {"answer": "background-color", "isCorrect": true},
+                {"answer": "color", "isCorrect": false},
+                {"answer": "text-color", "isCorrect": false},
+                {"answer": "bgcolor", "isCorrect": false}
+            ]
+        }
+    ]
+}
+;
+
+            // Функція для відображення тесту
+            function renderTest() {
+                testData.questions.forEach((question, index) => {
+                    const div = document.createElement('div');
+                    div.classList.add('question');
+                    div.innerHTML = `<p>${index + 1}. ${question.question}</p>`;
+                    
+                    question.answers.forEach(answer => {
+                        const input = document.createElement('input');
+                        input.type = 'radio';
+                        input.name = `question${index}`;
+                        input.value = answer.answer;
+                        div.appendChild(input);
+                        
+                        const label = document.createElement('label');
+                        label.classList.add('answer');
+                        label.innerHTML = answer.answer;
+                        div.appendChild(label);
+                    });
+
+                    testContainer.appendChild(div);
+                });
+            }
+
+            // Функція для перевірки результатів
+            function checkResults() {
+                let score = 0;
+                testData.questions.forEach((question, index) => {
+                    const selectedAnswer = document.querySelector(`input[name="question${index}"]:checked`);
+                    if (selectedAnswer && selectedAnswer.value === question.answers.find(answer => answer.isCorrect).answer) {
+                        score++;
+                    }
+                });
+                resultContainer.textContent = `Ваш результат: ${score} з ${testData.questions.length}`;
+            }
+
+            // Відображення тесту при завантаженні сторінки
+            renderTest();
+
+            // Обробник події для кнопки "Завершити тест"
+            submitBtn.addEventListener('click', function() {
+                checkResults();
+            });
+        });
+    </script>
+</body>
+</html>
